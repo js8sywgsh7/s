@@ -47,9 +47,12 @@ def _count_tokens(text: str, model: str) -> int:
     try:
         count = litellm.token_counter(model=model, text=text)
         return int(count)
-    except Exception:
-        logger.exception("Failed to count tokens")
-        return len(text) // 4  # Rough estimate
+    except (ValueError, TypeError, AttributeError) as e:
+        # Handle expected errors from litellm token counting
+        logger.warning("Failed to count tokens for model %s: %s", model, str(e))
+        # Fallback: rough approximation of 4 chars per token
+        return len(text) // 4
+
 
 
 def _get_message_tokens(msg: dict[str, Any], model: str) -> int:
@@ -120,8 +123,13 @@ def _summarize_messages(
             "role": "assistant",
             "content": summary_msg.format(count=len(messages), text=summary),
         }
-    except Exception:
-        logger.exception("Failed to summarize messages")
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError) as e:
+        # Handle expected errors from litellm API or response parsing
+        logger.exception("Failed to summarize messages: %s", str(e))
+        return messages[0]
+    except OSError as e:
+        # Handle network/connection errors
+        logger.exception("Network error while summarizing messages: %s", str(e))
         return messages[0]
 
 

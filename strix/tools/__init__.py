@@ -29,29 +29,58 @@ HAS_PERPLEXITY_API = bool(Config.get("perplexity_api_key"))
 DISABLE_BROWSER = (Config.get("strix_disable_browser") or "false").lower() == "true"
 
 if not SANDBOX_MODE:
-    from .agents_graph import *  # noqa: F403
+    from .agents_graph import (
+        agent_finish,
+        create_agent,
+        send_message_to_agent,
+        view_agent_graph,
+        wait_for_message,
+    )
 
     if not DISABLE_BROWSER:
-        from .browser import *  # noqa: F403
-    from .file_edit import *  # noqa: F403
-    from .finish import *  # noqa: F403
-    from .notes import *  # noqa: F403
-    from .proxy import *  # noqa: F403
-    from .python import *  # noqa: F403
-    from .reporting import *  # noqa: F403
-    from .terminal import *  # noqa: F403
-    from .thinking import *  # noqa: F403
-    from .todo import *  # noqa: F403
+        from .browser import browser_action
+    from .file_edit import list_files, search_files, str_replace_editor
+    from .finish import finish_scan
+    from .notes import create_note, delete_note, list_notes, update_note
+    from .proxy import (
+        list_requests,
+        list_sitemap,
+        repeat_request,
+        scope_rules,
+        send_request,
+        view_request,
+        view_sitemap_entry,
+    )
+    from .python import python_action
+    from .reporting import create_vulnerability_report
+    from .terminal import terminal_execute
+    from .thinking import think
+    from .todo import (
+        create_todo,
+        delete_todo,
+        list_todos,
+        mark_todo_done,
+        mark_todo_pending,
+        update_todo,
+    )
 
     if HAS_PERPLEXITY_API:
-        from .web_search import *  # noqa: F403
+        from .web_search import web_search
 else:
     if not DISABLE_BROWSER:
-        from .browser import *  # noqa: F403
-    from .file_edit import *  # noqa: F403
-    from .proxy import *  # noqa: F403
-    from .python import *  # noqa: F403
-    from .terminal import *  # noqa: F403
+        from .browser import browser_action
+    from .file_edit import list_files, search_files, str_replace_editor
+    from .proxy import (
+        list_requests,
+        list_sitemap,
+        repeat_request,
+        scope_rules,
+        send_request,
+        view_request,
+        view_sitemap_entry,
+    )
+    from .python import python_action
+    from .terminal import terminal_execute
 
 __all__ = [
     "ImplementedInClientSideOnlyError",

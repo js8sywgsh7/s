@@ -82,8 +82,8 @@ def _handle_navigation_actions(
         return manager.launch_browser(url)
     if action == "goto":
         _validate_url(action, url)
-        assert url is not None
-        return manager.goto_url(url, tab_id)
+        # _validate_url raises ValueError if url is None, so it's guaranteed to be non-None here
+        return manager.goto_url(url, tab_id)  # type: ignore[arg-type]
     if action == "back":
         return manager.back(tab_id)
     if action == "forward":
@@ -101,13 +101,13 @@ def _handle_interaction_actions(
 ) -> dict[str, Any]:
     if action in {"click", "double_click", "hover"}:
         _validate_coordinate(action, coordinate)
-        assert coordinate is not None
+        # _validate_coordinate raises ValueError if coordinate is None
         action_map = {
             "click": manager.click,
             "double_click": manager.double_click,
             "hover": manager.hover,
         }
-        return action_map[action](coordinate, tab_id)
+        return action_map[action](coordinate, tab_id)  # type: ignore[arg-type]
 
     if action in {"scroll_down", "scroll_up"}:
         direction = "down" if action == "scroll_down" else "up"
@@ -115,12 +115,12 @@ def _handle_interaction_actions(
 
     if action == "type":
         _validate_text(action, text)
-        assert text is not None
-        return manager.type_text(text, tab_id)
+        # _validate_text raises ValueError if text is None
+        return manager.type_text(text, tab_id)  # type: ignore[arg-type]
     if action == "press_key":
         _validate_key(action, key)
-        assert key is not None
-        return manager.press_key(key, tab_id)
+        # _validate_key raises ValueError if key is None
+        return manager.press_key(key, tab_id)  # type: ignore[arg-type]
 
     raise ValueError(f"Unknown interaction action: {action}")
 
@@ -139,12 +139,12 @@ def _handle_tab_actions(
         return manager.new_tab(url)
     if action == "switch_tab":
         _validate_tab_id(action, tab_id)
-        assert tab_id is not None
-        return manager.switch_tab(tab_id)
+        # _validate_tab_id raises ValueError if tab_id is None
+        return manager.switch_tab(tab_id)  # type: ignore[arg-type]
     if action == "close_tab":
         _validate_tab_id(action, tab_id)
-        assert tab_id is not None
-        return manager.close_tab(tab_id)
+        # _validate_tab_id raises ValueError if tab_id is None
+        return manager.close_tab(tab_id)  # type: ignore[arg-type]
     if action == "list_tabs":
         return manager.list_tabs()
     raise ValueError(f"Unknown tab action: {action}")
@@ -161,16 +161,16 @@ def _handle_utility_actions(
 ) -> dict[str, Any]:
     if action == "wait":
         _validate_duration(action, duration)
-        assert duration is not None
-        return manager.wait_browser(duration, tab_id)
+        # _validate_duration raises ValueError if duration is None
+        return manager.wait_browser(duration, tab_id)  # type: ignore[arg-type]
     if action == "execute_js":
         _validate_js_code(action, js_code)
-        assert js_code is not None
-        return manager.execute_js(js_code, tab_id)
+        # _validate_js_code raises ValueError if js_code is None
+        return manager.execute_js(js_code, tab_id)  # type: ignore[arg-type]
     if action == "save_pdf":
         _validate_file_path(action, file_path)
-        assert file_path is not None
-        return manager.save_pdf(file_path, tab_id)
+        # _validate_file_path raises ValueError if file_path is None
+        return manager.save_pdf(file_path, tab_id)  # type: ignore[arg-type]
     if action == "get_console_logs":
         return manager.get_console_logs(tab_id, clear)
     if action == "view_source":
