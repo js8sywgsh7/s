@@ -193,7 +193,8 @@ async def execute_tool_with_validation(
     except Exception as e:
         # Re-raise unexpected errors for proper debugging
         # This includes system-level exceptions like KeyboardInterrupt
-        raise RuntimeError(f"Unexpected error executing {tool_name}") from e
+        exc_type = type(e).__name__
+        raise RuntimeError(f"Unexpected error executing {tool_name}: {exc_type}") from e
 
 
 async def execute_tool_invocation(tool_inv: dict[str, Any], agent_state: Any | None = None) -> Any:

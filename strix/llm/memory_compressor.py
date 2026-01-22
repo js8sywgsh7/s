@@ -197,16 +197,16 @@ class MemoryCompressor:
             else:
                 regular_msgs.append(msg)
 
+        # Early exit if message count is small enough that compression is unlikely needed
+        # This avoids all token counting overhead for small conversations
+        if len(regular_msgs) <= MIN_RECENT_MESSAGES:
+            return messages
+
         recent_msgs = regular_msgs[-MIN_RECENT_MESSAGES:]
         old_msgs = regular_msgs[:-MIN_RECENT_MESSAGES]
 
         # Type assertion since we ensure model_name is not None in __init__
         model_name: str = self.model_name  # type: ignore[assignment]
-
-        # Early exit if message count is small enough that compression is unlikely needed
-        # This avoids token counting overhead for small conversations
-        if len(regular_msgs) <= MIN_RECENT_MESSAGES:
-            return messages
 
         total_tokens = sum(
             _get_message_tokens(msg, model_name) for msg in system_msgs + regular_msgs
