@@ -169,7 +169,8 @@ async def execute_tool_with_validation(
     if not is_valid:
         return f"Error: {error_msg}"
 
-    assert tool_name is not None
+    if tool_name is None:
+        return "Error: Tool name is required"
 
     arg_error = _validate_tool_arguments(tool_name, kwargs)
     if arg_error:
@@ -177,13 +178,23 @@ async def execute_tool_with_validation(
 
     try:
         result = await execute_tool(tool_name, agent_state, **kwargs)
-    except Exception as e:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError) as e:
+        # Handle expected errors from tool execution
         error_str = str(e)
         if len(error_str) > 500:
             error_str = error_str[:500] + "... [truncated]"
         return f"Error executing {tool_name}: {error_str}"
-    else:
-        return result
+    except OSError as e:
+        # Handle file system and network errors
+        error_str = str(e)
+        if len(error_str) > 500:
+            error_str = error_str[:500] + "... [truncated]"
+        return f"Error executing {tool_name}: {error_str}"
+    except Exception as e:
+        # Re-raise unexpected errors for proper debugging
+        # This includes system-level exceptions like KeyboardInterrupt
+        exc_type = type(e).__name__
+        raise RuntimeError(f"Unexpected error executing {tool_name}: {exc_type}") from e
 
 
 async def execute_tool_invocation(tool_inv: dict[str, Any], agent_state: Any | None = None) -> Any:

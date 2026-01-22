@@ -179,6 +179,7 @@ COPY strix/tools/__init__.py strix/tools/registry.py strix/tools/executor.py str
 COPY strix/tools/browser/ /app/strix/tools/browser/
 COPY strix/tools/file_edit/ /app/strix/tools/file_edit/
 COPY strix/tools/notes/ /app/strix/tools/notes/
+COPY strix/tools/nuclei/ /app/strix/tools/nuclei/
 COPY strix/tools/python/ /app/strix/tools/python/
 COPY strix/tools/terminal/ /app/strix/tools/terminal/
 COPY strix/tools/proxy/ /app/strix/tools/proxy/

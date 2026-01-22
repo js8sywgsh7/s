@@ -47,9 +47,12 @@ def _count_tokens(text: str, model: str) -> int:
     try:
         count = litellm.token_counter(model=model, text=text)
         return int(count)
-    except Exception:
-        logger.exception("Failed to count tokens")
-        return len(text) // 4  # Rough estimate
+    except (ValueError, TypeError, AttributeError) as e:
+        # Handle expected errors from litellm token counting
+        logger.warning("Failed to count tokens for model %s: %s", model, str(e))
+        # Fallback: rough approximation of 4 chars per token
+        return len(text) // 4
+
 
 
 def _get_message_tokens(msg: dict[str, Any], model: str) -> int:
@@ -120,8 +123,13 @@ def _summarize_messages(
             "role": "assistant",
             "content": summary_msg.format(count=len(messages), text=summary),
         }
-    except Exception:
-        logger.exception("Failed to summarize messages")
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError) as e:
+        # Handle expected errors from litellm API or response parsing
+        logger.exception("Failed to summarize messages: %s", str(e))
+        return messages[0]
+    except OSError as e:
+        # Handle network/connection errors
+        logger.exception("Network error while summarizing messages: %s", str(e))
         return messages[0]
 
 
@@ -188,6 +196,11 @@ class MemoryCompressor:
                 system_msgs.append(msg)
             else:
                 regular_msgs.append(msg)
+
+        # Early exit if message count is small enough that compression is unlikely needed
+        # This avoids all token counting overhead for small conversations
+        if len(regular_msgs) <= MIN_RECENT_MESSAGES:
+            return messages
 
         recent_msgs = regular_msgs[-MIN_RECENT_MESSAGES:]
         old_msgs = regular_msgs[:-MIN_RECENT_MESSAGES]
