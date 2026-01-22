@@ -42,6 +42,7 @@ if not SANDBOX_MODE:
     from .file_edit import list_files, search_files, str_replace_editor
     from .finish import finish_scan
     from .notes import create_note, delete_note, list_notes, update_note
+    from .nuclei import nuclei_scan
     from .proxy import (
         list_requests,
         list_sitemap,

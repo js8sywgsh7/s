@@ -291,7 +291,7 @@ nmap_scan(target="192.168.1.1", scan_type="vuln_scan", ports="80,443")
 Here are some popular security tools you might want to integrate:
 
 - **SQLMap**: SQL injection exploitation
-- **Nuclei**: Template-based vulnerability scanning
+- **Nuclei**: Template-based vulnerability scanning ✅ **Now Available!**
 - **FFuf**: Web fuzzing and directory brute forcing
 - **Gobuster**: Directory/DNS brute forcing
 - **WPScan**: WordPress vulnerability scanning
@@ -304,6 +304,15 @@ Here are some popular security tools you might want to integrate:
 - **theHarvester**: OSINT gathering
 - **Sublist3r**: Subdomain enumeration
 - **Amass**: Attack surface mapping
+
+## Example: Nuclei Integration
+
+Nuclei has been fully integrated as a reference implementation. You can find:
+- **Implementation**: `strix/tools/nuclei/nuclei_actions.py`
+- **AI Guidance**: `strix/skills/nuclei.md`
+- **Tests**: `tests/tools/test_nuclei.py`
+
+Use it as a template for adding similar external tools.
 
 ## Tool Architecture
 
